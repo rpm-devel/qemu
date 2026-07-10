@@ -320,11 +320,12 @@ Obsoletes: %{name}-system-unicore32-core <= %{epoch}:%{version}-%{release}
 
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
-Version: 11.0.0
+Version: 11.0.2
 Release: 1%{?dist}
 Epoch: 15
-License: GPLv2 and BSD and MIT and CC-BY
-URL: http://www.qemu.org/
+License: GPL-2.0-only AND BSD-3-Clause AND MIT AND CC-BY-4.0
+URL: https://www.qemu.org/
+ExclusiveArch: x86_64 aarch64
 
 Source0: https://download.qemu.org/%{name}-%{version}%{?rcstr}.tar.xz
 
@@ -966,11 +967,6 @@ Summary: QEMU user mode emulation of qemu targets
 Requires: %{name}-user = %{epoch}:%{version}-%{release}
 Requires(post): systemd-units
 Requires(postun): systemd-units
-# qemu-user-binfmt + qemu-user-static both provide binfmt rules
-# Temporarily disable to get fedora CI working. Re-enable
-# once this CI issue let's us deal with subpackage conflicts:
-# https://pagure.io/fedora-ci/general/issue/184
-#Conflicts: qemu-user-static
 Obsoletes: qemu-user-binfmt < %{epoch}:%{version}-%{release}
 %description user-binfmt
 This package provides the user mode emulation of qemu targets
@@ -980,12 +976,6 @@ This package provides the user mode emulation of qemu targets
 Summary: QEMU user mode emulation of qemu targets static build
 Requires(post): systemd-units
 Requires(postun): systemd-units
-# qemu-user-binfmt + qemu-user-static both provide binfmt rules
-# Temporarily disable to get fedora CI working. Re-enable
-# once this CI issue let's us deal with subpackage conflicts:
-# https://pagure.io/fedora-ci/general/issue/184
-#Conflicts: qemu-user-binfmt
-#Provides: qemu-user-binfmt
 Obsoletes: qemu-user-static < %{epoch}:%{version}-%{release}
 %description user-static
 This package provides the user mode emulation of qemu targets built as
@@ -1362,7 +1352,7 @@ This package provides the QEMU system emulator for Xtensa boards.
 
 
 %prep
-%setup -q -n qemu-%{version}%{?rcstr}
+%autosetup -p1 -n qemu-%{version}%{?rcstr}
 
 %global qemu_kvm_build qemu_kvm_build
 mkdir -p %{qemu_kvm_build}
@@ -2539,6 +2529,16 @@ useradd -r -u 107 -g qemu -G kvm -d / -s /sbin/nologin \
 
 
 %changelog
+* Sat Jul 05 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 11.0.2-1
+- Update to 11.0.2
+- URL: http://www.qemu.org/ -> https://www.qemu.org/
+- Remove commented-out Conflicts/Provides directives (qemu-user-binfmt/static)
+- Verified Source0 downloadable
+
+* Thu Jul 03 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 11.0.0-1
+- SPDX: GPLv2/BSD/MIT/CC-BY -> GPL-2.0-only AND BSD-3-Clause AND MIT AND CC-BY-4.0
+- Add ExclusiveArch: x86_64 aarch64; %%autosetup -p1
+
 * Fri Apr 24 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 11.0.0-1
 - Update to 11.0.0
 - Enable all system targets and features
