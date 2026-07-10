@@ -10,6 +10,19 @@
 %global usbredir_version 0.7.1
 %global ipxe_version 20200823-5.git4bd064de
 
+# Package names diverge between RHEL/Fedora and openSUSE/SLES
+%if 0%{?suse_version}
+%global libpng_devel_pkg      libpng16-devel
+%global pulseaudio_devel_pkg  libpulse-devel
+%global daxctl_devel_pkg      libndctl-devel
+%global alsa_devel_pkg        alsa-devel
+%else
+%global libpng_devel_pkg      libpng-devel
+%global pulseaudio_devel_pkg  pulseaudio-libs-devel
+%global daxctl_devel_pkg      daxctl-devel
+%global alsa_devel_pkg        alsa-lib-devel
+%endif
+
 %global have_memlock_limits 0
 %global need_qemu_kvm 0
 %ifarch %{ix86}
@@ -371,7 +384,7 @@ BuildRequires: librbd-devel
 BuildRequires: systemtap
 BuildRequires: systemtap-sdt-devel
 # For VNC PNG support
-BuildRequires: libpng-devel
+BuildRequires: %{libpng_devel_pkg}
 # For virtiofs
 BuildRequires: libcap-ng-devel
 # Hard requirement for version >= 1.3
@@ -417,9 +430,9 @@ BuildRequires: make
 # -display sdl support
 BuildRequires: SDL2-devel
 # pulseaudio audio output
-BuildRequires: pulseaudio-libs-devel
+BuildRequires: %{pulseaudio_devel_pkg}
 # alsa audio output
-BuildRequires: alsa-lib-devel
+BuildRequires: %{alsa_devel_pkg}
 %if %{have_block_nfs}
 # NFS drive support
 BuildRequires: libnfs-devel
@@ -477,7 +490,7 @@ BuildRequires: libzstd-devel
 # `hostname` used by test suite
 BuildRequires: hostname
 # nvdimm dax
-BuildRequires: daxctl-devel
+BuildRequires: %{daxctl_devel_pkg}
 # fuse block device
 BuildRequires: fuse-devel
 %if %{have_jack}
@@ -2534,6 +2547,10 @@ useradd -r -u 107 -g qemu -G kvm -d / -s /sbin/nologin \
 - URL: http://www.qemu.org/ -> https://www.qemu.org/
 - Remove commented-out Conflicts/Provides directives (qemu-user-binfmt/static)
 - Verified Source0 downloadable
+- Multi-distro: guard libpng-devel/libpng16-devel, pulseaudio-libs-devel/libpulse-devel,
+  alsa-lib-devel/alsa-devel, daxctl-devel/libndctl-devel via %%if 0%%{?suse_version}
+  (openSUSE/SLES use different package names for these BuildRequires; verified via
+  openSUSE Build Service and package repositories)
 
 * Thu Jul 03 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 11.0.0-1
 - SPDX: GPLv2/BSD/MIT/CC-BY -> GPL-2.0-only AND BSD-3-Clause AND MIT AND CC-BY-4.0
